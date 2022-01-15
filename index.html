@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./images/favicon-32x32.png"
+    />
+    <title>Frontend Mentor | Todo app</title>
+
+    <!-- css -->
+    <link rel="stylesheet" href="dist/tailwind.css" />
+
+    <!-- font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- script -->
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script src="src/js/app.js"></script>
+
+    <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+    <style>
+      .attribution {
+        font-size: 11px;
+        text-align: center;
+      }
+      .attribution a {
+        color: hsl(228, 45%, 44%);
+      }
+    </style>
+  </head>
+  <body
+    class="relative font-josefin-sans bg-gray-50 flex flex-col max-w-3xl min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-10 md:pt-20"
+  >
+    <div
+      class="bg-mobile-light md:bg-desktop-light bg-cover bg-no-repeat fixed -z-10 top-0 left-0 w-full h-32 md:h-64"
+    ></div>
+
+    <header class="flex justify-between items-center w-full text-white mb-7">
+      <h1 class="font-medium text-3xl tracking-widest uppercase">Todo</h1>
+
+      <!-- dark icon -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+        />
+      </svg>
+
+      <!-- light icon for now this will be hidden -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="hidden h-5 w-5"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </header>
+
+    <section x-data="todoApp()" class="w-full space-y-5 top-28 mb-5">
+      <header class="flex items-center bg-white p-4 rounded-lg text-xs md:text-lg shadow">
+        <input type="checkbox" class="mr-2" />
+        <input @click="addNewTask()" x-model="newTask" type="text" placeholder="Create a new todo" class="flex-1 focus:outline-none" />
+      </header>
+
+      <main class="bg-white rounded-lg divide-y shadow">
+        <ul x-for="task in tasks" class="divide-y">
+          <!-- <li
+            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-300 line-through"
+          >
+            <div>
+              <input type="checkbox" checked class="mr-2" />
+              <span>Complete online JavaScript Course</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 hidden group-hover:block text-gray-900"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </li>
+          <li
+            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
+          >
+            <div>
+              <input type="checkbox" class="mr-2" />
+              <span>Jog around the park 3x</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 hidden group-hover:block"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </li>
+          <li
+            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
+          >
+            <div>
+              <input type="checkbox" class="mr-2" />
+              <span>10 min meditation</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 hidden group-hover:block"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </li>
+          <li
+            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
+          >
+            <div>
+              <input type="checkbox" class="mr-2" />
+              <span>Read for 1 hour</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 hidden group-hover:block"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </li>
+          <li
+            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
+          >
+            <div>
+              <input type="checkbox" class="mr-2" />
+              <span>Pick up groceries</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 hidden group-hover:block"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </li>
+          <li
+            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
+          >
+            <div>
+              <input type="checkbox" class="mr-2" />
+              <span>Complete Todo app on frontend mentor</span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 hidden group-hover:block"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </li> -->
+          <li
+            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
+          >
+            <div>
+              <input type="checkbox" class="mr-2" />
+              <span x-text="task.title"></span>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 hidden group-hover:block"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </li>
+        </ul>
+
+        <!-- for desktop -->
+        <div class="p-4 flex justify-between text-gray-400 text-xs md:text-lg">
+          <div>
+            <!-- Add dynamic number -->
+            <span>0</span> items left
+          </div>
+
+          <!-- in mobile this should hidden -->
+          <div class="hidden md:flex space-x-5 justify-between items-center">
+            <div class="text-blue-500">All</div>
+            <div>Active</div>
+            <div>Completed</div>
+          </div>
+
+          <div>Clear Completed</div>
+        </div>
+      </main>
+
+      <!-- for mobile -->
+      <footer
+        class="shadow block md:hidden bg-white p-4 rounded-lg text-gray-500 text-xs md:text-lg"
+      >
+        <div class="flex justify-around">
+          <div class="text-blue-500">All</div>
+          <div>Active</div>
+          <div>Completed</div>
+        </div>
+      </footer>
+    </section>
+
+    <footer class="mt-auto text-center text-gray-500 text-xs md:text-lg">
+      Drag and drop to reorder list
+      <div class="attribution">
+        Challenge by
+        <a href="https://www.frontendmentor.io?ref=challenge" target="_blank"
+          >Frontend Mentor</a
+        >. Coded by <a href="#">Aung Htet Paing</a>.
+      </div>
+    </footer>
+  </body>
+</html>
