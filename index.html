@@ -79,12 +79,24 @@
       </svg>
     </header>
 
-    <section x-cloak x-data="todoApp()" class="w-full space-y-5 top-28 mb-5">
+    <section x-cloak x-data="todoApp()" class="w-full space-y-5 top-28 mb-5" x-init="setWatcher">
       <!-- new task input -->
       <header
         class="flex items-center bg-white p-4 rounded-lg text-xs md:text-lg shadow"
       >
-        <input @click="toggleAll" type="checkbox" class="mr-2" x-model="isToggledAll" />
+        <div 
+          @click="toggleAll" 
+          class="grid place-items-center h-6 w-6 rounded-full mr-2 bg-gradient-to-br from-blue-300 to-indigo-500 cursor-pointer">
+          <div 
+            :class="isAllCompleted ? 'bg-transparent' : 'bg-white'"
+            class="grid place-items-center rounded-full h-5 w-5 p-1"
+          >
+            <svg x-show="isAllCompleted" xmlns="http://www.w3.org/2000/svg" width="11" height="9">
+              <path fill="none" stroke="#fff" stroke-width="2" d="M1 4.304L3.696 7l6-6" />
+            </svg>
+          </div>
+        </div>
+        <!-- <input @click="toggleAll" type="checkbox" class="mr-2" x-model="isToggledAll" /> -->
         <input
           @keyup.enter="addNewTodo()"
           x-model="newTodo"
@@ -95,23 +107,37 @@
       </header>
 
       <main class="bg-white rounded-lg divide-y shadow">
-        <ul x-show="todos.length">
+        <ul x-show="filteredTodos.length">
           <template x-for="todo in filteredTodos" :key="todo.id" class="divide-y">
             <!-- todo item -->
             <li
               class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
             >
-              <div>
-                <input 
+              <div class="flex items-center w-full">
+                <!-- toggleTodoCompletion button -->
+                <div 
+                  @click="todo.completed = !todo.completed" 
+                  class="grid place-items-center h-6 w-6 rounded-full mr-2 bg-gradient-to-br from-blue-300 to-indigo-500 cursor-pointer">
+                  <div 
+                    :class="todo.completed ? 'bg-transparent' : 'bg-white'"
+                    class="grid place-items-center rounded-full h-5 w-5 p-1"
+                  >
+                    <svg x-show="todo.completed" xmlns="http://www.w3.org/2000/svg" width="11" height="9">
+                      <path fill="none" stroke="#fff" stroke-width="2" d="M1 4.304L3.696 7l6-6" />
+                    </svg>
+                  </div>
+                </div>
+                <!-- <input 
                   @click="todo.completed = !todo.completed; save()" 
-                  type="checkbox" class="mr-2" x-model="todo.completed"/>
+                  type="checkbox" class="mr-2" x-model="todo.completed"/> -->
                 <label 
                   x-show="todo != editingTodo"
                   @dblclick="editTodo(todo)"
                   x-text="todo.title" 
                   :class="todo.completed ? 'line-through text-gray-400' : ''"
+                  class="w-full cursor-pointer"
                 ></label>
-                <input x-show="todo == editingTodo" type="text" x-model="todo.title" @keyup.enter="completeEditTodo(todo)" @keyup.escape="cancelEditTodo(todo)" class="bg-gray-200 border">
+                <input x-show="todo == editingTodo" type="text" x-model="todo.title" @keyup.enter="completeEditTodo(todo)" @keyup.escape="cancelEditTodo(todo)" class="bg-gray-50 border border-gray-100 w-full rounded px-2 focus:border-gray-200 focus:outline-none mr-2" autofocus>
               </div>
 
               <!-- remove todo button -->
@@ -133,24 +159,29 @@
             </li>
           </template>
         </ul>
+        <div x-show="!filteredTodos.length && todos.length" class="p-4 text-xs md:text-lg text-gray-700 rounded-t-lg">
+          No <span x-text="filter"></span> todo.
+        </div>
 
         <!-- for desktop -->
-        <div x-show="todos.length" class="p-4 flex justify-between text-gray-400 text-xs md:text-lg">
-          <div>
+        <div x-show="todos.length" class="relative p-4 flex items-center text-gray-400 text-xs md:text-lg">
+          <div class="absolute left-4">
             <!-- Add dynamic number -->
             <span x-text="activeTodos.length"></span> 
-            <span x-text="activeTodos.length == 1 ? 'item': 'items'"></span> left
+            <span x-text="activeTodos.length > 1 ? 'items': 'item'"></span> left
           </div>
 
           <!-- in mobile this should hidden -->
-          <div class="hidden md:flex space-x-5 justify-between items-center">
-            <div @click="filter = 'all'" :class="filter == 'all' ? 'text-blue-500' : ''">All</div>
-            <div @click="filter = 'active'" :class="filter == 'active' ? 'text-blue-500' : ''">Active</div>
-            <div @click="filter = 'completed'" :class="filter == 'completed' ? 'text-blue-500' : ''">Completed</div>
+          <div class="hidden md:flex space-x-5 justify-between items-center mx-auto">
+            <div @click="filter = 'all'" :class="filter == 'all' ? 'text-blue-500' : 'hover:text-gray-700'" class="cursor-pointer">All</div>
+            <div @click="filter = 'active'" :class="filter == 'active' ? 'text-blue-500' : 'hover:text-gray-700'" class="cursor-pointer">Active</div>
+            <div @click="filter = 'completed'" :class="filter == 'completed' ? 'text-blue-500' : 'hover:text-gray-700'" class="cursor-pointer">Completed</div>
           </div>
 
-          <div>
-            <div @click="todos = activeTodos; save()" :class="completedTodos.length ? 'block' : 'hidden'">Clear Completed</div>
+          <div class="absolute right-4">
+            <div @click="todos = activeTodos" :class="completedTodos.length ? 'block cursor-pointer' : 'hidden'">
+              Clear Completed
+            </div>
           </div>
         </div>
       </main>
@@ -160,15 +191,15 @@
         class="shadow block md:hidden bg-white p-4 rounded-lg text-gray-500 text-xs md:text-lg"
       >
         <div class="flex justify-around">
-          <div class="text-blue-500">All</div>
-          <div>Active</div>
-          <div>Completed</div>
+          <div @click="filter = 'all'" :class="filter == 'all' ? 'text-blue-500' : 'hover:text-gray-700'" class="cursor-pointer">All</div>
+          <div @click="filter = 'active'" :class="filter == 'active' ? 'text-blue-500' : 'hover:text-gray-700'" class="cursor-pointer">Active</div>
+          <div @click="filter = 'completed'" :class="filter == 'completed' ? 'text-blue-500' : 'hover:text-gray-700'" class="cursor-pointer">Completed</div>
         </div>
       </footer>
     </section>
 
     <footer class="mt-auto text-center text-gray-500 text-xs md:text-lg">
-      Drag and drop to reorder list
+      <!-- Drag and drop to reorder list -->
       <div class="attribution">
         Challenge by
         <a href="https://www.frontendmentor.io?ref=challenge" target="_blank"

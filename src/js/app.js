@@ -1,12 +1,13 @@
 window.todoStore = {
     todos: JSON.parse(localStorage.getItem('todo-store') || '[]'),
     
-    isToggledAll: JSON.parse(localStorage.getItem('isToggledAll') || 'false'),
-
-    save() {
-        localStorage.setItem('todo-store', JSON.stringify(this.todos))
+    setWatcher() {
+        this.$watch('todos', () => {
+            localStorage.setItem('todo-store', JSON.stringify(this.todos))
+        })
     }
 }
+
 window.todoApp = () => {
     return {
         ...todoStore,
@@ -21,7 +22,6 @@ window.todoApp = () => {
                     title: this.newTodo,
                     completed: false,
                 })
-                this.save()
     
                 this.newTodo = ''
             }
@@ -29,14 +29,11 @@ window.todoApp = () => {
 
         deleteTodo(todo) {
             this.todos.splice(this.todos.indexOf(todo), 1)
-            this.save()
         },
 
         editTodo(todo) {
             this.editingTodo = todo
             todo.oldTitle = todo.title
-
-            this.save()
         },
 
         completeEditTodo(todo) {
@@ -44,27 +41,18 @@ window.todoApp = () => {
                 this.removeTodo(todo)
             }
             this.editingTodo = null
-
-            this.save()
         },
 
         cancelEditTodo(todo) {
             this.editingTodo = null
             todo.title = todo.oldTitle
             delete todo.oldTitle
-
-            this.save()
         },
 
         toggleAll() {
-            this.todos.map(todo => todo.completed = !this.isToggledAll)
-            localStorage.setItem('isToggledAll', JSON.stringify(!this.isToggledAll))
-            this.save()
+            let isAllCompleted = this.isAllCompleted
+            this.todos.map(todo => todo.completed = !isAllCompleted)
         },
-
-        // clearCompleted() {
-        //     this.completedTodos.map(todo => this.removeTodo(todo))
-        // },
 
         get activeTodos() {
             return this.todos.filter(todo => !todo.completed)
@@ -80,6 +68,10 @@ window.todoApp = () => {
                 active: this.activeTodos,
                 completed: this.completedTodos
             }[this.filter];
+        },
+
+        get isAllCompleted() {
+            return this.todos.length === this.completedTodos.length
         }
     }
 }
