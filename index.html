@@ -27,7 +27,6 @@
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
-    <script src="src/js/app.js"></script>
 
     <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
     <style>
@@ -37,6 +36,9 @@
       }
       .attribution a {
         color: hsl(228, 45%, 44%);
+      }
+      [x-cloak] {
+        display: none;
       }
     </style>
   </head>
@@ -77,185 +79,79 @@
       </svg>
     </header>
 
-    <section x-data="todoApp()" class="w-full space-y-5 top-28 mb-5">
-      <header class="flex items-center bg-white p-4 rounded-lg text-xs md:text-lg shadow">
-        <input type="checkbox" class="mr-2" />
-        <input @click="addNewTask()" x-model="newTask" type="text" placeholder="Create a new todo" class="flex-1 focus:outline-none" />
+    <section x-cloak x-data="todoApp()" class="w-full space-y-5 top-28 mb-5">
+      <!-- new task input -->
+      <header
+        class="flex items-center bg-white p-4 rounded-lg text-xs md:text-lg shadow"
+      >
+        <input @click="toggleAll" type="checkbox" class="mr-2" x-model="isToggledAll" />
+        <input
+          @keyup.enter="addNewTodo()"
+          x-model="newTodo"
+          type="text"
+          placeholder="Create a new todo"
+          class="flex-1 focus:outline-none"
+        />
       </header>
 
       <main class="bg-white rounded-lg divide-y shadow">
-        <ul x-for="task in tasks" class="divide-y">
-          <!-- <li
-            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-300 line-through"
-          >
-            <div>
-              <input type="checkbox" checked class="mr-2" />
-              <span>Complete online JavaScript Course</span>
-            </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 hidden group-hover:block text-gray-900"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        <ul x-show="todos.length">
+          <template x-for="todo in filteredTodos" :key="todo.id" class="divide-y">
+            <!-- todo item -->
+            <li
+              class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </li>
-          <li
-            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
-          >
-            <div>
-              <input type="checkbox" class="mr-2" />
-              <span>Jog around the park 3x</span>
-            </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 hidden group-hover:block"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </li>
-          <li
-            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
-          >
-            <div>
-              <input type="checkbox" class="mr-2" />
-              <span>10 min meditation</span>
-            </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 hidden group-hover:block"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </li>
-          <li
-            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
-          >
-            <div>
-              <input type="checkbox" class="mr-2" />
-              <span>Read for 1 hour</span>
-            </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 hidden group-hover:block"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </li>
-          <li
-            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
-          >
-            <div>
-              <input type="checkbox" class="mr-2" />
-              <span>Pick up groceries</span>
-            </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 hidden group-hover:block"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </li>
-          <li
-            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
-          >
-            <div>
-              <input type="checkbox" class="mr-2" />
-              <span>Complete Todo app on frontend mentor</span>
-            </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 hidden group-hover:block"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </li> -->
-          <li
-            class="group flex items-center justify-between p-4 text-xs md:text-lg text-gray-700"
-          >
-            <div>
-              <input type="checkbox" class="mr-2" />
-              <span x-text="task.title"></span>
-            </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 hidden group-hover:block"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </li>
+              <div>
+                <input 
+                  @click="todo.completed = !todo.completed; save()" 
+                  type="checkbox" class="mr-2" x-model="todo.completed"/>
+                <label 
+                  x-show="todo != editingTodo"
+                  @dblclick="editTodo(todo)"
+                  x-text="todo.title" 
+                  :class="todo.completed ? 'line-through text-gray-400' : ''"
+                ></label>
+                <input x-show="todo == editingTodo" type="text" x-model="todo.title" @keyup.enter="completeEditTodo(todo)" @keyup.escape="cancelEditTodo(todo)" class="bg-gray-200 border">
+              </div>
+
+              <!-- remove todo button -->
+              <svg
+                @click="deleteTodo(todo)"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 hidden group-hover:block"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </li>
+          </template>
         </ul>
 
         <!-- for desktop -->
-        <div class="p-4 flex justify-between text-gray-400 text-xs md:text-lg">
+        <div x-show="todos.length" class="p-4 flex justify-between text-gray-400 text-xs md:text-lg">
           <div>
             <!-- Add dynamic number -->
-            <span>0</span> items left
+            <span x-text="activeTodos.length"></span> 
+            <span x-text="activeTodos.length == 1 ? 'item': 'items'"></span> left
           </div>
 
           <!-- in mobile this should hidden -->
           <div class="hidden md:flex space-x-5 justify-between items-center">
-            <div class="text-blue-500">All</div>
-            <div>Active</div>
-            <div>Completed</div>
+            <div @click="filter = 'all'" :class="filter == 'all' ? 'text-blue-500' : ''">All</div>
+            <div @click="filter = 'active'" :class="filter == 'active' ? 'text-blue-500' : ''">Active</div>
+            <div @click="filter = 'completed'" :class="filter == 'completed' ? 'text-blue-500' : ''">Completed</div>
           </div>
 
-          <div>Clear Completed</div>
+          <div>
+            <div @click="todos = activeTodos; save()" :class="completedTodos.length ? 'block' : 'hidden'">Clear Completed</div>
+          </div>
         </div>
       </main>
 
@@ -280,5 +176,6 @@
         >. Coded by <a href="#">Aung Htet Paing</a>.
       </div>
     </footer>
+    <script src="src/js/app.js"></script>
   </body>
 </html>
