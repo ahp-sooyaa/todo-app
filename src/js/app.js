@@ -23,7 +23,7 @@ window.todoApp = () => {
         newTodo: '',
         editingTodo: null,
         filter: 'all',
-        selectedTheme: localStorage.theme,
+        selectedTheme: localStorage.theme || 'light',
 
         addNewTodo() {
             if (this.newTodo.trim() !== '') {
