@@ -27,6 +27,13 @@
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
+    <script>
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    </script>
 
     <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
     <style>
@@ -43,10 +50,11 @@
     </style>
   </head>
   <body
-    class="relative font-josefin-sans bg-gray-50 flex flex-col max-w-3xl min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-10 md:pt-20"
+    x-cloak x-data="todoApp()" x-init="setWatchers"
+    class="relative font-josefin-sans bg-gray-50 dark:bg-black flex flex-col max-w-3xl min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-10 md:pt-20"
   >
     <div
-      class="bg-mobile-light md:bg-desktop-light bg-cover bg-no-repeat fixed -z-10 top-0 left-0 w-full h-32 md:h-64"
+      class="bg-mobile-light md:bg-desktop-light dark:bg-mobile-dark dark:md:bg-desktop-dark bg-cover bg-no-repeat fixed -z-10 top-0 left-0 w-full h-52 md:h-72"
     ></div>
 
     <header class="flex justify-between items-center w-full text-white mb-7">
@@ -54,8 +62,10 @@
 
       <!-- dark icon -->
       <svg
+        x-show="selectedTheme == 'light'"
+        @click="selectedTheme = 'dark'"
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5"
+        class="h-5 w-5 cursor-pointer"
         viewBox="0 0 20 20"
         fill="currentColor"
       >
@@ -66,8 +76,10 @@
 
       <!-- light icon for now this will be hidden -->
       <svg
+        x-show="selectedTheme == 'dark'"
+        @click="selectedTheme = 'light'"
         xmlns="http://www.w3.org/2000/svg"
-        class="hidden h-5 w-5"
+        class="h-5 w-5 cursor-pointer"
         viewBox="0 0 20 20"
         fill="currentColor"
       >
@@ -79,16 +91,16 @@
       </svg>
     </header>
 
-    <section x-cloak x-data="todoApp()" class="w-full space-y-5 top-28 mb-5" x-init="setWatcher">
+    <section class="w-full space-y-5 top-28 mb-5">
       <!-- new task input -->
       <header
-        class="flex items-center bg-white p-4 rounded-lg text-xs md:text-lg shadow"
+        class="flex items-center bg-white dark:bg-gray-800 p-4 rounded-lg text-xs md:text-lg shadow"
       >
         <div 
           @click="toggleAll" 
           class="grid place-items-center h-6 w-6 rounded-full mr-2 bg-gradient-to-br from-blue-300 to-indigo-500 cursor-pointer">
           <div 
-            :class="isAllCompleted ? 'bg-transparent' : 'bg-white'"
+            :class="isAllCompleted ? 'bg-transparent' : 'bg-white dark:bg-gray-800'"
             class="grid place-items-center rounded-full h-5 w-5 p-1"
           >
             <svg x-show="isAllCompleted" xmlns="http://www.w3.org/2000/svg" width="11" height="9">
@@ -102,11 +114,11 @@
           x-model="newTodo"
           type="text"
           placeholder="Create a new todo"
-          class="flex-1 focus:outline-none"
+          class="flex-1 focus:outline-none dark:bg-gray-800 dark:text-white"
         />
       </header>
 
-      <main class="bg-white rounded-lg divide-y shadow">
+      <main class="bg-white dark:bg-gray-800 rounded-lg divide-y shadow">
         <ul x-show="filteredTodos.length">
           <template x-for="todo in filteredTodos" :key="todo.id" class="divide-y">
             <!-- todo item -->
@@ -119,7 +131,7 @@
                   @click="todo.completed = !todo.completed" 
                   class="grid place-items-center h-6 w-6 rounded-full mr-2 bg-gradient-to-br from-blue-300 to-indigo-500 cursor-pointer">
                   <div 
-                    :class="todo.completed ? 'bg-transparent' : 'bg-white'"
+                    :class="todo.completed ? 'bg-transparent' : 'bg-white dark:bg-gray-800'"
                     class="grid place-items-center rounded-full h-5 w-5 p-1"
                   >
                     <svg x-show="todo.completed" xmlns="http://www.w3.org/2000/svg" width="11" height="9">
@@ -134,10 +146,10 @@
                   x-show="todo != editingTodo"
                   @dblclick="editTodo(todo)"
                   x-text="todo.title" 
-                  :class="todo.completed ? 'line-through text-gray-400' : ''"
+                  :class="todo.completed ? 'line-through text-gray-400' : 'dark:text-white'"
                   class="w-full cursor-pointer"
                 ></label>
-                <input x-show="todo == editingTodo" type="text" x-model="todo.title" @keyup.enter="completeEditTodo(todo)" @keyup.escape="cancelEditTodo(todo)" class="bg-gray-50 border border-gray-100 w-full rounded px-2 focus:border-gray-200 focus:outline-none mr-2" autofocus>
+                <input x-show="todo == editingTodo" type="text" x-model="todo.title" @keyup.enter="completeEditTodo(todo)" @keyup.escape="cancelEditTodo(todo)" class="bg-gray-50 border border-gray-100 w-full rounded px-2 focus:border-gray-200 focus:outline-none mr-2 dark:bg-gray-800 dark:text-white">
               </div>
 
               <!-- remove todo button -->
@@ -188,7 +200,7 @@
 
       <!-- for mobile -->
       <footer
-        class="shadow block md:hidden bg-white p-4 rounded-lg text-gray-500 text-xs md:text-lg"
+        class="shadow block md:hidden bg-white dark:bg-gray-800 p-4 rounded-lg text-gray-500 text-xs md:text-lg"
       >
         <div class="flex justify-around">
           <div @click="filter = 'all'" :class="filter == 'all' ? 'text-blue-500' : 'hover:text-gray-700'" class="cursor-pointer">All</div>

@@ -1,9 +1,18 @@
 window.todoStore = {
     todos: JSON.parse(localStorage.getItem('todo-store') || '[]'),
     
-    setWatcher() {
+    setWatchers() {
         this.$watch('todos', () => {
             localStorage.setItem('todo-store', JSON.stringify(this.todos))
+        })
+
+        this.$watch('selectedTheme', () => {
+            localStorage.theme = this.selectedTheme
+            if(this.selectedTheme == 'dark') {
+                document.documentElement.classList.add('dark')
+            } else {
+                document.documentElement.classList.remove('dark')
+            }
         })
     }
 }
@@ -14,6 +23,7 @@ window.todoApp = () => {
         newTodo: '',
         editingTodo: null,
         filter: 'all',
+        selectedTheme: localStorage.theme,
 
         addNewTodo() {
             if (this.newTodo.trim() !== '') {
@@ -72,6 +82,10 @@ window.todoApp = () => {
 
         get isAllCompleted() {
             return this.todos.length === this.completedTodos.length
-        }
+        },
+
+        // get isDarkTheme() {
+        //     return localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        // }
     }
 }
